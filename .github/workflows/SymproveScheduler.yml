@@ -1,0 +1,33 @@
+name: Run Symprove Combined Script
+
+on:
+  schedule:
+    - cron: '30 3 * * *'   # Runs every day at 09:00 AM IST (03:30 UTC)
+  workflow_dispatch:        # Allows manual trigger from GitHub
+
+jobs:
+  run-symprove-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install playwright pandas openpyxl requests beautifulsoup4 lxml
+
+      - name: Install Playwright browsers
+        run: playwright install --with-deps chromium
+
+      - name: Run Symprove Combined Script (Headless)
+        env:
+          PYTHONUNBUFFERED: 1
+        run: |
+          python SymproveCombined.py
